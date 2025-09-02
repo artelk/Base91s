@@ -1,0 +1,27 @@
+name: Benchmark
+
+on:
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    strategy:
+        matrix:
+            os: [ ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-latest ] 
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore Base91s.sln
+
+    - name: Build
+      run: dotnet build -c Release --no-restore
+
+    - name: Run Benchmark
+      run:  cd ./Base91s.Benchmark && dotnet run -c Release --no-build
